@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css"
+        />
+        <script src="http://code.jquery.com/jquery-1.9.1.min.js">
+                                                                
+        </script>
+        <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js">
+                                                                
+        </script>
+        <script src="/socket.io/socket.io.js">
+                                                                
+        </script>
+        <script>
+        $(document).bind('mobileinit', function()
+        {
+            $.mobile.selectmenu.prototype.options.nativeMenu = false;
+        });
+        
+        $(document).ready(function()
+        {
+        	  var socket = io.connect('http://localhost:52273');
+        	  socket.emit('status');
+
+			  socket.on('status', function (data) {
+                // console.log(data);
+			  	if(data['onoff']=="1"){
+			  		$('#flip-min').val("on");
+			  	}else{
+			  		$('#flip-min').val("off");
+			  	}
+                $('#flip-min').slider('refresh');
+
+			  	if(data['red']=="1"){
+			  		$('#red_toggle').attr("style", "background: red;");
+			  	}else{
+			  		$('#red_toggle').attr("style", "background: gray;");
+			  	}
+
+			  	if(data['yellow']=="1"){
+			  		$('#yellow_toggle').attr("style", "background: yellow;");
+			  	}else{
+			  		$('#yellow_toggle').attr("style", "background: gray;");
+			  	}
+
+			  	if(data['green']=="1"){
+			  		$('#green_toggle').attr("style", "background: green;");
+			  	}else{
+			  		$('#green_toggle').attr("style", "background: gray;");
+			  	}
+			  });
+
+			$( "#flip-min" ).on( "change", function(event, ui) {
+			  //console.log($("#flip-min").val());
+			  if($("#flip-min").val()=="on"){
+			  	socket.emit('on');
+			  }else{
+			  	socket.emit('off');
+			  }
+			});
+
+            $("#red_toggle").click(function()
+            {
+                socket.emit('red', {status: 'toggle'});
+            });
+
+
+            $("#yellow_toggle").click(function()
+            {
+                socket.emit('yellow', {status: 'toggle'});
+            });
+
+            $("#green_toggle").click(function()
+            {
+                socket.emit('green', {status: 'toggle'});
+            });
+        });
+
+        </script>
+    </head>
+    <body>
+
+        <div data-role="page">
+            <div data-role="header">
+                <h1>
+                    OctoberSky Week1
+                </h1>
+            </div>
+            <ul data-role="content">            
+            	<div class="containing-element">
+					<select name="flip-min" id="flip-min" data-role="slider">
+						<option value="off">Off</option>
+						<option value="on">On</option>
+					</select>
+				</div>
+				<div data-role="controlgroup" data-type="horizontal">
+					<a href="#" id="red_toggle" data-role="button">	red	</a>
+					<a href="#" id="yellow_toggle" data-role="button">	yellow	</a>
+					<a href="#" id="green_toggle" data-role="button">	green	</a>
+				</div>
+            </ul>
+        </div>
+
+    </body>
+
+</html>
